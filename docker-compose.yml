@@ -1,0 +1,22 @@
+wordpress:
+  image: wordpress
+  environment:
+    WORDPRESS_DEBUG: 'true'
+  volumes:
+    - ./api-consumer:/var/www/html/wp-content/plugins/api-consumer
+  links:
+    - db:mysql
+  ports:
+    - 80:80
+
+db:
+  image: mysql
+  environment:
+    MYSQL_ROOT_PASSWORD: root
+
+phpmyadmin:
+  image: creativearea/phpmyadmin
+  links:
+    - db:mysql
+  ports:
+    - "8000:80"
