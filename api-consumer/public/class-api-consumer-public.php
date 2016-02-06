@@ -96,7 +96,7 @@ class API_Consumer_Public
 	 *
 	 * @since  0.0.1
 	 * @access private
-	 * @param  integer $limit Max data items to fetch.
+	 * @param  int $limit Max data items to fetch.
 	 */
 	private function fetch_api_data( $limit = 10 ) {
 
@@ -191,8 +191,22 @@ class API_Consumer_Public
 	 * @param array  $data The data to be used.
 	 */
 	private function parse_shortcode_content( $content, $data ) {
-		foreach ( $data as $key => $value ) {
-			$content = str_replace( '{{' . $key . '}}', $value, $content );
+		$pattern = '/{{([a-z0-9_]+)((?:\.[a-z_]+\((?:[^)]+)?\))*)}}/';
+		$formatter_pattern = '/.([a-z_]+)\((?:([^)]*))?\)/';
+		preg_match_all( $pattern, $content, $matches );
+		foreach ( $matches[0] as $capture_key => $capture_val ) {
+			$formatted_data = $data[ $matches[1][ $capture_key ] ];
+			if ( ! empty( $matches[2][ $capture_key ] ) ) {
+				preg_match_all( $formatter_pattern, $matches[2][ $capture_key ], $formatter_matches );
+				foreach ( $formatter_matches[1] as $formatter_key => $formatter_val ) {
+					if ( ! empty( $formatter_matches[2][ $formatter_key ] ) ) {
+						$formatted_data = call_user_func( $formatter_val, $formatter_matches[2][ $formatter_key ], $formatted_data );
+					} else {
+						$formatted_data = call_user_func( $formatter_val, $formatted_data );
+					}
+				}
+			}
+			$content = str_replace( $capture_val, $formatted_data, $content );
 		}
 		return wp_kses_post( $content );
 	}
