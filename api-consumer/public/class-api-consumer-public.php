@@ -96,9 +96,8 @@ class API_Consumer_Public
 	 *
 	 * @since  0.0.1
 	 * @access private
-	 * @param  int $limit Max data items to fetch.
 	 */
-	private function fetch_api_data( $limit = 10 ) {
+	private function fetch_api_data() {
 
 		$api_uri = get_option( $this->prefix . '_uri' );
 		$username = get_option( $this->prefix . '_username' );
@@ -128,18 +127,14 @@ class API_Consumer_Public
 
 		$result = array();
 		if ( count( $items ) > 0 ) {
-			$i = 0;
 			foreach ( $items as $item ) {
-				if ( $i < $limit ) {
-					$tmp = array();
-					foreach ( $custom_fields as $field_key => $field_value ) {
-						if ( key_exists( $field_value, $item ) ) {
-							$tmp[ $field_key ] = $item[ $field_value ];
-						}
+				$tmp = array();
+				foreach ( $custom_fields as $field_key => $field_value ) {
+					if ( key_exists( $field_value, $item ) ) {
+						$tmp[ $field_key ] = $item[ $field_value ];
 					}
-					$result[] = $tmp;
-					$i++;
 				}
+				$result[] = $tmp;
 			}
 		}
 
@@ -167,16 +162,41 @@ class API_Consumer_Public
 		$output = '';
 
 		$shortcode_atts = shortcode_atts( array(
-			'limit' => 10,
 			'wrapper-class' => 'api-block-wrapper',
+			'limit' => 10,
+			'filters' => '',
 		), $atts );
 
-		$limit = (int) esc_attr( $shortcode_atts['limit'] );
-		$data = $this->fetch_api_data( $limit );
+		$data = $this->fetch_api_data();
 
 		$output .= '<div class="' . esc_attr( $shortcode_atts['wrapper-class'] ) . '">';
+		$limit = (int) esc_attr( $shortcode_atts['limit'] );
+
+		$filters_pattern = '/\{?\s?(?<key>.*?)\s?:\s?(?<val>["].*["]?|.*?)[,\W]\}?/';
+		preg_match_all( $filters_pattern, $shortcode_atts['filters'], $filters_matches );
+		if ( ! empty( $filters_matches[0] ) ) {
+			$filters = array();
+			foreach ( $filters_matches['key'] as $key => $filter_key ) {
+				$filters[ $filter_key ] = $filters_matches['val'][ $key ];
+			}
+		}
+
+		$i = 0;
 		foreach ( $data as $item ) {
-			$output .= $this->parse_shortcode_content( $content, $item );
+			if ( $limit > $i ) {
+				if ( ! empty( $filters ) ) {
+					foreach ( $filters as $filter_key => $filter_val ) {
+						if ( key_exists( $filter_key, $item ) && $item[ $filter_key ] === $filter_val ) {
+							$output .= $this->parse_shortcode_content( $content, $item );
+						}
+					}
+				} else {
+					$output .= $this->parse_shortcode_content( $content, $item );
+				}
+				$i++;
+			} else {
+				break 1;
+			}
 		}
 		$output .= '</div>';
 
