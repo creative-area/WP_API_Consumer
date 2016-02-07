@@ -125,20 +125,7 @@ class API_Consumer_Public
 		$data = json_decode( $json_data, true );
 		$items = ( $root ) ? $data[ $root ] : $data;
 
-		$result = array();
-		if ( count( $items ) > 0 ) {
-			foreach ( $items as $item ) {
-				$tmp = array();
-				foreach ( $custom_fields as $field_key => $field_value ) {
-					if ( key_exists( $field_value, $item ) ) {
-						$tmp[ $field_key ] = $item[ $field_value ];
-					}
-				}
-				$result[] = $tmp;
-			}
-		}
-
-		return $result;
+		return $items;
 	}
 
 	/**

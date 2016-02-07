@@ -165,41 +165,6 @@ class API_Consumer_Admin
 		register_setting( $this->prefix . '_optionpage', $this->prefix . '_username' );
 		register_setting( $this->prefix . '_optionpage', $this->prefix . '_password' );
 		register_setting( $this->prefix . '_optionpage', $this->prefix . '_root' );
-
-		add_settings_section(
-			$this->prefix . '_optionpage_customfields',
-			__( 'Custom fields', 'load_plugin_textdomain' ),
-			array( $this, 'fill_customfields_section' ),
-			$this->prefix . '_optionpage'
-		);
-
-		$customfields_option = $this->prefix . '_customfields';
-
-		for ( $i = 1; $i < 11; $i++ ) {
-
-			$str_num = str_pad( $i, 2, '0', STR_PAD_LEFT );
-			$slug = $this->prefix . '_field_' . $str_num;
-			$field_id = $customfields_option . '_' . $str_num;
-			$field_name = $customfields_option . '[' . $slug . ']';
-
-			add_settings_field(
-				$slug,
-				__( 'Field', 'load_plugin_textdomain' ) . ' #' . $str_num,
-				array( $this, 'render_settings_field' ),
-				$this->prefix . '_optionpage',
-				$this->prefix . '_optionpage_customfields',
-				array(
-					'slug' => $slug,
-					'field_id' => $field_id,
-					'field_name' => $field_name,
-					'label_for' => $field_id,
-					'option' => $customfields_option,
-				)
-			);
-		}
-
-		register_setting( $this->prefix . '_optionpage',  $customfields_option );
-
 	}
 
 	/**
@@ -209,15 +174,6 @@ class API_Consumer_Admin
 	 */
 	public function fill_main_section() {
 		esc_html_e( 'Fill your API info below', 'load_plugin_textdomain' );
-	}
-
-	/**
-	 * Fill admin page custom fields section content.
-	 *
-	 * @since 0.0.1
-	 */
-	public function fill_customfields_section() {
-		esc_html_e( 'Fill up to 10 field keys you want to fetch from the API above. Please refer the documentation to know how to render those data.', 'load_plugin_textdomain' );
 	}
 
 	/**
