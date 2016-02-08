@@ -175,12 +175,13 @@ class API_Consumer_Public
 					foreach ( $filters as $filter_key => $filter_val ) {
 						if ( key_exists( $filter_key, $item ) && $item[ $filter_key ] === $filter_val ) {
 							$output .= $this->parse_shortcode_content( $content, $item );
+							$i++;
 						}
 					}
 				} else {
 					$output .= $this->parse_shortcode_content( $content, $item );
+					$i++;
 				}
-				$i++;
 			} else {
 				break 1;
 			}
