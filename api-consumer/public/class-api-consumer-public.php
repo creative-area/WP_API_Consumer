@@ -198,7 +198,7 @@ class API_Consumer_Public
 	 * @param array  $data The data to be used.
 	 */
 	private function parse_shortcode_content( $content, $data ) {
-		$pattern = '/{{([a-z0-9_]+)((?:\.[a-z_]+\((?:[^)]+)?\))*)}}/';
+		$pattern = '/{{([a-zA-Z0-9_]+)((?:\.[a-z_]+\((?:[^)]+)?\))*)}}/';
 		$formatter_pattern = '/.([a-z_]+)\((?:([^)]*))?\)/';
 		preg_match_all( $pattern, $content, $matches );
 		foreach ( $matches[0] as $capture_key => $capture_val ) {
