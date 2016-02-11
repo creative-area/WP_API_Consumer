@@ -116,6 +116,7 @@ class API_Consumer_Admin
 				'field_name' => $this->prefix . '_uri',
 				'label_for' => $this->prefix . '_uri',
 				'option' => $this->prefix . '_uri',
+				'field_class' => 'regular-text',
 			)
 		);
 
@@ -130,6 +131,7 @@ class API_Consumer_Admin
 				'field_name' => $this->prefix . '_username',
 				'label_for' => $this->prefix . '_username',
 				'option' => $this->prefix . '_username',
+				'field_class' => 'regular-text',
 			)
 		);
 
@@ -144,6 +146,7 @@ class API_Consumer_Admin
 				'field_name' => $this->prefix . '_password',
 				'label_for' => $this->prefix . '_password',
 				'option' => $this->prefix . '_password',
+				'field_class' => 'regular-text',
 			)
 		);
 
@@ -158,6 +161,22 @@ class API_Consumer_Admin
 				'field_name' => $this->prefix . '_root',
 				'label_for' => $this->prefix . '_root',
 				'option' => $this->prefix . '_root',
+				'field_class' => 'regular-text',
+			)
+		);
+
+		add_settings_field(
+			$this->prefix . '_cache_ttl',
+			__( 'Cache TTL', 'load_plugin_textdomain' ),
+			array( $this, 'render_settings_field' ),
+			$this->prefix . '_optionpage',
+			$this->prefix . '_optionpage_main',
+			array(
+				'field_id' => $this->prefix . '_cache_ttl',
+				'field_name' => $this->prefix . '_cache_ttl',
+				'label_for' => $this->prefix . '_cache_ttl',
+				'option' => $this->prefix . '_cache_ttl',
+				'field_class' => 'small-text',
 			)
 		);
 
@@ -165,6 +184,7 @@ class API_Consumer_Admin
 		register_setting( $this->prefix . '_optionpage', $this->prefix . '_username' );
 		register_setting( $this->prefix . '_optionpage', $this->prefix . '_password' );
 		register_setting( $this->prefix . '_optionpage', $this->prefix . '_root' );
+		register_setting( $this->prefix . '_optionpage', $this->prefix . '_cache_ttl' );
 	}
 
 	/**
@@ -185,7 +205,7 @@ class API_Consumer_Admin
 	public function render_settings_field( $args ) {
 		$option = get_option( $args['option'] );
 		echo '<input type="text"
-			class="regular-text"
+			class="' . esc_attr( $args['field_class'] ) . '"
 			id="' . esc_attr( $args['field_id'] ) . '"
 			name="' . esc_attr( $args['field_name'] ) . '"
 			value="' . esc_attr( ( is_array( $option ) ? $option[ $args['slug'] ] : $option ) ) . '"

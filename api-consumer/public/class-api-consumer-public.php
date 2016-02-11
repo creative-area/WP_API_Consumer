@@ -103,25 +103,32 @@ class API_Consumer_Public
 		$username = get_option( $this->prefix . '_username' );
 		$password = get_option( $this->prefix . '_password' );
 		$root = get_option( $this->prefix . '_root' );
+		$cache_ttl = (int) get_option( $this->prefix . '_cache_ttl' );
 
 		if ( empty( $api_uri ) ) {
 			return false;
 		}
 
-		$http_context = array( 'method' => 'GET', 'timeout' => 15 );
-		$header  = "Content-Type: application/json\r\n";
-		if ( ! empty( $username ) || ! empty( $password ) ) {
-			$header .= 'Authorization: Basic ' . base64_encode( "$username:$password" ) . "\r\n";
-		}
-		$http_context['header'] = $header;
-		$context = stream_context_create( array( 'http' => $http_context ) );
-
-		$json_data = file_get_contents( $api_uri, false, $context );
-		if ( false === $json_data ) {
-			return false;
+		if ( empty( $cache_ttl ) ) {
+			$cache_ttl = 30;
 		}
 
-		$data = json_decode( $json_data, true );
+		$args = array(
+			'headers' => array(
+				'Content-Type' => 'application/json',
+				'Authorization' => 'Basic ' . base64_encode( $username . ':' . $password ),
+			),
+		);
+
+		$api_data = get_transient( $transient_name );
+
+		if ( false === $api_data ) {
+			$request = wp_remote_get( $api_uri, $args );
+			$api_data = wp_remote_retrieve_body( $request );
+			set_transient( $transient_name, $api_data, $cache_ttl );
+		}
+
+		$data = json_decode( $api_data, true );
 		$items = ( $root ) ? $data[ $root ] : $data;
 
 		return $items;
