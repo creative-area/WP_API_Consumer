@@ -15,8 +15,8 @@
  * Defines the plugin name, version, and two examples hooks for how to
  * enqueue the admin-specific stylesheet and JavaScript.
  *
- * @package    api_consumer
- * @subpackage api_consumer/admin
+ * @package    API_Consumer
+ * @subpackage API_Consumer/admin
  * @author     CREATIVE AREA
  */
 class API_Consumer_Admin

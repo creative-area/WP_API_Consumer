@@ -103,7 +103,6 @@ class API_Consumer_Public
 		$username = get_option( $this->prefix . '_username' );
 		$password = get_option( $this->prefix . '_password' );
 		$root = get_option( $this->prefix . '_root' );
-		$custom_fields = get_option( $this->prefix . '_customfields' );
 
 		if ( empty( $api_uri ) ) {
 			return false;
